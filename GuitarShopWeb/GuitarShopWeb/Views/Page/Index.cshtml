@@ -1,0 +1,7 @@
+﻿@model GuitarShopWeb.Models.Page
+
+<div>
+    <h3>@Model.Title</h3>
+    <sml>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</sml>
+    <p>@Html.Raw(Model.PageContent)</p>
+</div>

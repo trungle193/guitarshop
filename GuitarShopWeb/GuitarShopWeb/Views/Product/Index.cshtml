@@ -1,0 +1,15 @@
+﻿@model List<GuitarShopWeb.Models.Product>
+<h2>@ViewBag.CategoryName</h2>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-3">
+            <div style="border:1px solid #eeeeee;border-radius:5px;padding:5px;margin-bottom:5px;">
+                <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSKqzKokWd9RNoGcgM2if2ULeL5WPSXxO5gfI0ji4NBHtGmgnlTXIZ16wL9K9nt0knEGQGvcfDgeSvWVDtkpez0PVzrtCnNpUmJeHu05HI69beWIt1oePZ2AQ&usqp=CAE" style="max-height:200px;max-width:100%" />
+                <h4>@item.Name</h4>
+                <p style="color:red">@item.SalePrice</p>
+                <p>@item.Description</p>
+            </div>
+        </div>
+    }
+</div>

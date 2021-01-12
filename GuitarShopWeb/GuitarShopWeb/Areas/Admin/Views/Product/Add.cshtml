@@ -1,0 +1,132 @@
+﻿<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Sản phẩm</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin/Home/Index">Home</a></li>
+                    <li class="breadcrumb-item active">Thêm sản phẩm</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Thêm sản phẩm</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Tên danh mục</label>
+                                <input type="text" v-model="category.name" class="form-control" placeholder="Tên danh mục">
+                            </div>
+                            <div class="form-group">
+                                <label>Loại danh mục</label>
+                                <select class="form-control" v-model="categoryType">
+                                    <option value="null">Chọn loại</option>
+                                    <option v-bind:value="t" v-for="t in categoryTypes">{{ t.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Danh mục cha</label>
+                                <select class="form-control" v-model="parentCategory">
+                                    <option value="null">Chọn danh mục</option>
+                                    <option v-bind:value="c" v-for="c in categories">{{ c.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="button" v-on:click="save()" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+@section Scripts{
+    <script>var app = new Vue({
+            el: '#app',
+             data: {
+                category: {
+                    id : @(ViewBag.id == null ? 0 : ViewBag.id),
+                    name: "",
+                    level : 0
+                },
+                parentCategory: null,
+                categories:[],
+                categoryType : null,
+                categoryTypes: [
+                    {
+                        id: 1,
+                        name: "Product"
+                    },
+                    {
+                        id: 2,
+                        name: "Page"
+                    }
+                ],
+            },
+             mounted(){
+
+                 if (this.category.id != 0) {
+                     var vm = this;
+                     axios.get("/api/category/" + this.category.id).then(function (res) {
+                         vm.category = res.data;
+                         vm.categoryType = vm.categoryTypes.filter(function (item) { return item.id == vm.category.categoryType })[0];
+                         if (vm.category.parentId != null) {
+                             vm.loadParentCategories(function () {
+                                 vm.parentCategory = vm.categories.filter(function (c) { return c.id == vm.category.parentId })[0];
+                             });
+                         } else {
+                             vm.loadParentCategories();
+                         }
+                     });
+                 } else {
+                     this.loadParentCategories();
+                 }
+            },
+            methods: {
+                save() {
+                    if(this.category.name=="" || this.category.name.trim().length==0){
+                        alert("vui long nhap ten danh muc");
+                    }else if(this.categoryType==null){
+                        alert("vui long chon loai danh muc");
+                    }else{
+                        this.category.categoryType = this.categoryType.id;
+                        if (this.parentCategory != null) {
+                            this.category.parentId = this.parentCategory.id;
+                            this.category.level = this.parentCategory.level + 1;
+                        } else {
+                            this.category.parentId = null;
+                            this.category.level = 0;
+                        }
+                        axios.post("/api/category/add",this.category).then(function (response){
+                            window.location=document.referrer;
+                        });
+                    }
+                },
+                loadParentCategories(callback) {
+                    var vm = this;
+                    axios.get("/api/category").then(function (res) {
+                        vm.categories = res.data;
+                        if (callback != undefined) {
+                            callback();
+                        }
+                    });
+                }
+            }
+        })</script>
+}

@@ -1,0 +1,140 @@
+﻿@{
+    @*ViewData["Title"] = "Home Page";*@
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Danh mục</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Admin/Home/Index">Home</a></li>
+                    <li class="breadcrumb-item active">Danh mục</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Danh mục</h3>
+                        &nbsp;&nbsp;<a href="/Admin/Category/Add" class="btn btn-primary btn-xs"><i class="fas fa-plus"></i> Thêm danh mục</a>
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-head-fixed">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="c in categories" @@click="view(c.id)">
+                                    <tr @@click="view(c.id)">
+                                        <td>{{c.id}}</td>
+                                        <td>{{c.name}}</td>
+                                        <td>{{c.categoryType | filter_type}}</td>
+                                        <td>
+                                            <button class="btn btn-xs btn-danger">Xoá</button>
+                                        </td>
+                                    </tr>
+                                    <template v-if="c.childrens.length>0" v-for="c1 in c.childrens" >
+                                        <tr @@click="view(c1.id)">
+                                            <td>{{c1.id}}</td>
+                                            <td style="padding-left:50px">{{c1.name}}</td>
+                                            <td>{{c1.categoryType | filter_type}}</td>
+                                            <td>
+                                                <button class="btn btn-xs btn-danger">Xoá</button>
+                                            </td>
+                                        </tr>
+
+
+                                        <template v-if="c1.childrens.length>0" v-for="c2 in c1.childrens" >
+                                            <tr @@click="view(c2.id)">
+                                                <td>{{c2.id}}</td>
+                                                <td style="padding-left:100px">{{c2.name}}</td>
+                                                <td>{{c2.categoryType | filter_type}}</td>
+                                                <td>
+                                                    <button class="btn btn-xs btn-danger">Xoá</button>
+                                                </td>
+                                            </tr>
+
+                                            <template v-if="c2.childrens.length>0" v-for="c3 in c2.childrens">
+                                                <tr @@click="view(c3.id)">
+                                                    <td>{{c3.id}}</td>
+                                                    <td style="padding-left:150px">{{c3.name}}</td>
+                                                    <td>{{c3.categoryType | filter_type}}</td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-danger">Xoá</button>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+@section Scripts{
+    <script>var categoryTypes = [
+            {
+                id: 1,
+                name: "Product"
+            },
+            {
+                id: 2,
+                name: "Page"
+            }
+        ];
+        var app = new Vue({
+            el: '#app',
+            data: {
+                categories: []
+            },
+            mounted() {
+                var vm = this;
+                axios.get("/api/category").then(function (res) {
+                    vm.categories = res.data;
+                });
+            },
+            filters: {
+                filter_type: function (id) {
+                    var cateType = categoryTypes.filter(function (item) {
+                        return item.id == id
+                    })[0];
+                    return cateType.name;
+                }
+            },
+            methods: {
+                view(id) {
+                    window.location.href = "/Admin/Category/Add?Id=" + id;
+                }
+            }
+        })</script>
+}

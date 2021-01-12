@@ -1,0 +1,29 @@
+﻿@model List<GuitarShopWeb.Models.Category>
+
+<nav class="navbar-nav">
+    <ul class="navbar">
+        @foreach (var item in Model.Where(x => x.Level == 1 && x.CategoryType == 1))
+        {
+            <li class="nav-item">
+                @if (item.CategoryType == 1)
+                {
+                    <a class="nav-link text-dark" href="/Product/Index?CategoryId=@item.Id">@item.Name</a>
+
+                    <ul class="menu-level-2">
+                        @foreach (var c2 in Model.Where(x => x.ParentId == item.Id))
+                        {
+                            <li>
+                                <a href="#">@c2.Name</a>
+                            </li>
+                        }
+                    </ul>
+
+                }
+                else if (item.CategoryType == 2)
+                {
+                    <a class="nav-link text-dark" href="/Page/Index?CategoryId=@item.Id">@item.Name</a>
+                }
+            </li>
+        }
+    </ul>
+</nav>
